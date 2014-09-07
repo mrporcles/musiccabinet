@@ -1,45 +1,23 @@
-FROM phusion/baseimage:0.9.11
-MAINTAINER gfjardim <gfjardim@gmail.com>
-ENV DEBIAN_FRONTEND noninteractive
+FROM ubuntu:trusty
 
-# Set correct environment variables
-ENV HOME /root
+ENV LANG en_US.UTF-8
+RUN locale-gen $LANG
 
-# Use baseimage-docker's init system
-CMD ["/sbin/my_init"]
+RUN apt-get update -q && \
+    apt-get install -qy openjdk-7-jre-headless
 
-RUN add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe multiverse"
-RUN add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/ trusty-updates universe multiverse"
+ADD http://downloads.sourceforge.net/project/subsonic/subsonic/4.9/subsonic-4.9.deb /tmp/subsonic.deb
+RUN dpkg -i /tmp/subsonic.deb && \
+    rm -rf /tmp/subsonic.deb && \
+    mv /var/subsonic /var/subsonic.default && \
+    ln -s /data /var/subsonic
 
-# Add the JAVA repository, import it's key and accept it's license
-RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" >> /etc/apt/sources.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
-RUN echo "oracle-java7-installer shared/accepted-oracle-license-v1-1 select true" | sudo /usr/bin/debconf-set-selections
+# Don't fork to the background
+RUN sed -i "s/ > \${LOG} 2>&1 &//" /usr/share/subsonic/subsonic.sh
 
-RUN apt-get update -qq && \
-    apt-get install -qq --force-yes grep sed cpio gzip oracle-java7-installer && \
-    apt-get autoremove && \
-    apt-get autoclean
+ADD start.sh /start.sh
 
-RUN usermod -u 99 nobody && \
-    usermod -g 100 nobody
+VOLUME ["/data"]
+EXPOSE 4040
 
-ADD crashplan-install.sh /opt/
-RUN bash /opt/crashplan-install.sh && \
-    mkdir -p /var/lib/crashplan && \
-    chown -R nobody /usr/local/crashplan /var/lib/crashplan
-
-VOLUME /data
-
-EXPOSE 4243
-EXPOSE 4242
-
-# Add config.sh to execute during container startup
-RUN mkdir -p /etc/my_init.d
-ADD config.sh /etc/my_init.d/config.sh
-RUN chmod +x /etc/my_init.d/config.sh
-
-# Add Sickbeard to runit
-RUN mkdir /etc/service/crashplan
-ADD CrashPlan.sh /etc/service/crashplan/run
-RUN chmod +x /etc/service/crashplan/run
+CMD ["/start.sh"]
