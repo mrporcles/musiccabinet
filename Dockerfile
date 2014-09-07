@@ -14,6 +14,8 @@ RUN dpkg -i /tmp/subsonic.deb && \
     mv /var/subsonic /var/subsonic.default && \
     ln -s /data /var/subsonic && \
     unzip -d /usr/share/subsonic -o /tmp/subsonic-installer-standalone.zip && \
+    mv -f /usr/share/subsonic/subsonic-installer-standalone/* /usr/share/subsonic/. && \
+    rm -rf /usr/share/subsonic/subsonic-installer-standalone && \
     rm -rf /tmp/subsonic-installer-standalone.zip
 
 # Don't fork to the background
