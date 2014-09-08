@@ -22,7 +22,7 @@ RUN dpkg -i /tmp/subsonic.deb && \
 RUN sed -i "s/ > \${LOG} 2>&1 &//" /usr/share/subsonic/subsonic.sh
 
 ADD start.sh /start.sh
-RUN chmod 777 /start.sh
+RUN chmod +x /usr/share/subsonic/subsonic.sh
 
 VOLUME ["/data"]
 EXPOSE 4040
