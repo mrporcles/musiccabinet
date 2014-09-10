@@ -4,7 +4,7 @@
 # Stop on error
 set -e
 
-DATA_DIR=/data
+DATA_DIR=/pgdata
 
 if [[ -e /firstrun ]]; then
   source /scripts/first_run.sh
