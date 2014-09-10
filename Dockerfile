@@ -54,7 +54,7 @@ EXPOSE 4040
 ADD scripts /scripts
 RUN chmod +x /scripts/pgstart.sh && \
 	chmod +x /scripts/ssstart.sh && \
-	chmod +x /usr/share/subsonic.sh
+	chmod +x /usr/share/subsonic/subsonic.sh
 
 RUN touch /firstrun
 
