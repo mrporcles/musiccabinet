@@ -1,4 +1,0 @@
-musiccabinet
-============
-
-Subsonic - MusicCabinet
