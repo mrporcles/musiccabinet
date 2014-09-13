@@ -25,10 +25,9 @@ $POSTGRESQL_SINGLE <<< "CREATE USER $POSTGRESQL_USER WITH SUPERUSER;" > /dev/nul
 $POSTGRESQL_SINGLE <<< "ALTER USER $POSTGRESQL_USER WITH PASSWORD '$POSTGRESQL_PASS';" > /dev/null
 $POSTGRESQL_SINGLE <<< "CREATE DATABASE $POSTGRESQL_DB OWNER $POSTGRESQL_USER TEMPLATE $POSTGRESQL_TEMPLATE;" > /dev/null
 
-echo "exec sudo -u postgres $POSTGRESQL_BIN --config-file=$POSTGRESQL_CONFIG_FILE" >> /usr/share/subsonic/subsonicmc.sh
-
 [ ! -L /data/transcode ] && ln -s /var/subsonic.default/transcode /data/transcode
 
 chmod +x /usr/share/subsonic/subsonicmc.sh
 
+exec sudo -u postgres $POSTGRESQL_BIN --config-file=$POSTGRESQL_CONFIG_FILE
 /usr/share/subsonic/subsonicmc.sh
