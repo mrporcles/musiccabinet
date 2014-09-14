@@ -2,32 +2,11 @@
 
 set -e
 
-POSTGRESQL_USER=${POSTGRESQL_USER:-"docker"}
-POSTGRESQL_PASS=${POSTGRESQL_PASS:-"docker"}
-POSTGRESQL_DB=${POSTGRESQL_DB:-"docker"}
-POSTGRESQL_TEMPLATE=${POSTGRESQL_TEMPLATE:-"DEFAULT"}
-
-POSTGRESQL_BIN=/usr/lib/postgresql/9.3/bin/postgres
-POSTGRESQL_CONFIG_FILE=/etc/postgresql/9.3/main/postgresql.conf
-POSTGRESQL_DATA=/var/lib/postgresql/9.3/main
-
-POSTGRESQL_SINGLE="sudo -u postgres $POSTGRESQL_BIN --single --config-file=$POSTGRESQL_CONFIG_FILE"
-
-if [ ! -d $POSTGRESQL_DATA ]; then
-    mkdir -p $POSTGRESQL_DATA
-    chown -R postgres:postgres $POSTGRESQL_DATA
-    sudo -u postgres /usr/lib/postgresql/9.3/bin/initdb -D $POSTGRESQL_DATA -E 'UTF-8' --lc-collate='en_US.UTF-8' --lc-ctype='en_US.UTF-8'
-    ln -s /etc/ssl/certs/ssl-cert-snakeoil.pem $POSTGRESQL_DATA/server.crt
-    ln -s /etc/ssl/private/ssl-cert-snakeoil.key $POSTGRESQL_DATA/server.key
-fi
-
-$POSTGRESQL_SINGLE <<< "CREATE USER $POSTGRESQL_USER WITH SUPERUSER;" > /dev/null
-$POSTGRESQL_SINGLE <<< "ALTER USER $POSTGRESQL_USER WITH PASSWORD '$POSTGRESQL_PASS';" > /dev/null
-$POSTGRESQL_SINGLE <<< "CREATE DATABASE $POSTGRESQL_DB OWNER $POSTGRESQL_USER TEMPLATE $POSTGRESQL_TEMPLATE;" > /dev/null
-
 [ ! -L /data/transcode ] && ln -s /var/subsonic.default/transcode /data/transcode
+
+sed '/-Dmusiccabinet.log.fileName/ a\ -Dmusiccabinet.jdbc.url=jdbc:postgresql://192.168.0.13:5432/musiccabinet \\' /usr/share/subsonic/subsonic.sh > /usr/share/subsonic/subsonictmp.sh 
+sed '/-Dmusiccabinet.jdbc.url/ a\ -Dmusiccabinet.jdbc.initialurl=jdbc:postgresql://192.168.0.13:5432/template1 \\' /usr/share/subsonic/subsonictmp.sh > /usr/share/subsonic/subsonicmc.sh
 
 chmod +x /usr/share/subsonic/subsonicmc.sh
 
-exec sudo -u postgres $POSTGRESQL_BIN --config-file=$POSTGRESQL_CONFIG_FILE
 /usr/share/subsonic/subsonicmc.sh
