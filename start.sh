@@ -9,6 +9,4 @@ sed '/-Dmusiccabinet.jdbc.url/ a\ -Dmusiccabinet.jdbc.initialurl=jdbc:postgresql
 
 chmod +x /usr/share/subsonic/subsonicmc.sh
 
-useradd postgres -p postgres
-
 /usr/share/subsonic/subsonicmc.sh
