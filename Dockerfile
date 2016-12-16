@@ -6,8 +6,8 @@ RUN locale-gen $LANG
 RUN apt-get update -q && \
     apt-get install -qy openjdk-7-jre-headless && \
     apt-get install -qy unzip
-
-ADD http://downloads.sourceforge.net/project/subsonic/subsonic/4.9/subsonic-4.9.deb /tmp/subsonic.deb
+    
+ADD http://downloads.sourceforge.net/project/subsonic/subsonic/6.0/subsonic-6.0.deb /tmp/subsonic.deb
 ADD http://dilerium.se/musiccabinet/subsonic-installer-standalone.zip /tmp/subsonic-installer-standalone.zip
 
 RUN dpkg -i /tmp/subsonic.deb && \
